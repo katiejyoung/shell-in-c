@@ -2,43 +2,34 @@
 
 # Overview
 
-In this assignment you will write your own shell in C, similar to bash. No other languages, including C++, are allowed, though you may use any version of C you like, such as C99. The shell will run command line instructions and return the results similar to other shells you have used, but without many of their fancier features.
+In this assignment you will write your own shell in C, similar to bash. 
 
-In this assignment you will write your own shell, called smallsh.  This will work like the bash shell you are used to using, prompting for a command line and running commands, but it will not have many of the special features of the bash shell.
+Your shell will allow for the redirection of standard input and standard output and it will support both foreground and background processes (controllable by the command line and by receiving signals). Your shell will support three built in commands: `exit`, `cd`, and `status`. It will also support comments, which are lines beginning with the # character.
 
-Your shell will allow for the redirection of standard input and standard output and it will support both foreground and background processes (controllable by the command line and by receiving signals).
 
-Your shell will support three built in commands: `exit`, `cd`, and `status`. It will also support comments, which are lines beginning with the # character.
 
-During the development of this program, take extra care to only do your work on our class server, as your software will likely negatively impact whatever machine it runs on, especially before it's finished. If you cause trouble on one of the non-class, public servers, it could hurt your grade! If you are having trouble logging in to any of our EECS servers because of runaway processes, please use this page to kill off any programs running on your account that might be blocking your access:
+## Specifications
 
-<https://teach.engr.oregonstate.edu/teach.php?type=kill_runaway_processes>
-
-# Specifications
-
-## The Prompt
-
-Use the colon : symbol as a prompt for each command line. Be sure you flush out the output buffers each time you print, as the text that you're outputting may not reach the screen until you do in this kind of interactive program. To do this, call fflush() immediately after each and every time you output text.
-
-The general syntax of a command line is:
+Use the colon : symbol as a prompt for each command line. The general syntax of a command line is:
 
 ```
 command [arg1 arg2 ...] [< input_file] [> output_file] [&]
 ```
 
-…where items in square brackets are optional.  You can assume that a command is made up of words separated by spaces. The special symbols <, >, and & are recognized, but they must be surrounded by spaces like other words. If the command is to be executed in the background, the last word must be &. If the & character appears anywhere else, just treat it as normal text. If standard input or output is to be redirected, the > or < words followed by a filename word must appear after all the arguments. Input redirection can appear before or after output redirection.
+…where items in square brackets are optional.  You can assume that a command is made up of words separated by spaces. The special symbols <, >, and & are recognized, but they must be surrounded by spaces like other words. 
+
+**If the command is to be executed in the background**, the last word must be &. **If standard input or output is to be redirected**, the > or < words followed by a filename word must appear after all the arguments. Input redirection can appear before or after output redirection.
 
 Your shell does not need to support any quoting; so arguments with spaces inside them are not possible. We are also not implementing the pipe "|" operator.
 
 Your shell must support command lines with a maximum length of 2048 characters, and a maximum of 512 arguments. You do not need to do any error checking on the syntax of the command line.
 
-Finally, your shell should allow blank lines and comments.  Any line that begins with the # character is a comment line and should be ignored (mid-line comments, such as the C-style //, will not be supported).  A blank line (one without any commands) should also do nothing. Your shell should just re-prompt for another command when it receives either a blank line or a comment line.
+Finally, your shell should allow blank lines and comments.  Any line that begins with the # character is a comment line and should be ignored. A blank line (one without any commands) should also do nothing.
 
-## Command Execution
 
-You will use fork(), exec(), and waitpid() to execute commands. From a conceptual perspective, consider setting up your shell to run in this manner: let the parent process (your shell) continue running. Whenever a non-built in command is received, have the parent fork() off a child. This child then does any needed input/output redirection before running exec() on the command given. Note that when doing redirection, that after using dup2() to set up the redirection, the redirection symbol and redirection destination/source are NOT passed into the following exec command (i.e., if the command given is `ls > junk`, then you handle the redirection to "junk" with dup2() and then simply pass `ls` into exec() ).
+### Command Execution
 
-Note that exec() will fail, and return the reason why, if it is told to execute something that it cannot do, like run a program that doesn't exist. In this case, your shell should indicate to the user that a command could not be executed (which you know because exec() returned an error), and set the value retrieved by the built-in `status` command to 1. Make sure that the child process that has had an exec() call fail terminates itself, or else it often loops back up to the top and tries to become a parent shell. This is easy to spot: if the output of the grading script seems to be repeating itself, then you've likely got a child process that didn't terminate after a failed exec().
+You will use fork(), exec(), and waitpid() to execute commands. Note that exec() will fail, and return the reason why, if it is told to execute something that it cannot do, like run a program that doesn't exist. In this case, your shell should indicate to the user that a command could not be executed (which you know because exec() returned an error), and set the value retrieved by the built-in `status` command to 1.
 
 Your shell should use the PATH variable to look for non-built in commands, and it should allow shell scripts to be executed. If a command fails because the shell could not find the command to run, then the shell will print an error message and set the exit status to 1.
 
@@ -48,7 +39,7 @@ Both stdin and stdout for a command can be redirected at the same time (see exam
 
 Your program must expand any instance of "$$" in a command into the process ID of the shell itself. Your shell does not otherwise perform variable expansion. This feature makes it easier to create a grading script that keeps your work separate.
 
-## Background and Foreground
+### Background and Foreground
 
 The shell should wait() for completion of foreground commands (commands without the &) before prompting for the next command. If the command given was a foreground command, then the parent shell does NOT return command line access and control to the user until the child terminates. It is recommend to have the parent simply call waitpid() on the child, while it waits.
 
@@ -157,68 +148,12 @@ background pid is 4963
 : exit $
 ```
 
-## Grading Method
+## To Run the Program:
+1. Give yourself permission to the compiler using: "chmod 777 compileall".
+2. Run "compileall" to compile the code.
+3. To run the program, type "smallsh"
+4. To terminate the program, type "exit"
 
-In addition to your shell needing to replicate the above example in functionality, this assignment is provided with the actual [grading test script](https://oregonstate.instructure.com/courses/1725991/files/71920033/download?verifier=TVk9ApsV01oBsQB3AYS2fWFc9YSWQb4plS54koXh&wrap=1) that will be used to assign your program a grade. Your program must function with this grading script, as follows. To run it, place it in the same directory as your compiled shell, chmod it (chmod +x ./p3testscript) and run this command from a bash prompt:
-
-```
-$ p3testscript 2>&1
-```
-
-or
-
-```
-$ p3testscript 2>&1 | more
-```
-
-or
-
-```
-$ p3testscript > mytestresults 2>&1
-```
-
-Don’t worry if the spacing, indentation, or look of the output of the script is different than when you run it interactively: that won’t affect your grade. The script may add extra colons at the beginning of lines or do other weird things, like put output about terminating processes further down the script than you intended. Use the script to prepare for your grade, as this is how it's being earned.
-
-Note that as an extra challenge, no "clean run" script is provided for Program 3: you'll need to interpret the results of your program yourself.
-
-If your program does not work with the grading script, and you instead request that we grade your script by hand, we will have to apply a 50% reduction to your final score. Make sure you work with the grading script on our class server from the very beginning!
-
-#Hints
-It is recommended that you program the built-in commands first, before tackling the fork(), exec(), waitpid() specifications.
-
-Don't forget to use fflush(stdout), as described above!
-
-As stated above, make sure you work with the grading script on our class server from the very beginning - don't leave this to the end!
-
-## Re-Entrancy
-
-A topic we haven't covered much is the concept of [re-entrancy](https://en.wikipedia.org/wiki/Reentrancy_(computing)). This is important when we consider that signal handlers cause jumps in execution that cause problems with certain functions.
-
-For our purposes, note that the printf() family of functions is NOT re-entrant. In your signal handlers, when outputting text, you must use other output functions!
-
-## Where to Program
-
-I _**HIGHLY**_ recommend that you develop this program directly on our course server. Doing so will prevent you from having problems transferring the program back and forth, and having compatibility problems. You have been warned: it will not behave the same on your own computer!
-
-If you do see `^M` characters all over your files, try this command:
-
-```
-$ dos2unix bustedFile
-```
-
-# What to Turn In and When
-
-Please submit a single zip file of your program code, which may be in as many different files as you want. Also, inside that zip file, you must provide a file called "README" that contains instructions on HOW to compile your code; you may compile your code however you wish. DO NOT include a copy of the testing script. As our Syllabus says, please be aware that neither the Instructor nor the TA(s) are alerted to comments added to the text boxes in Canvas that are alongside your assignment submissions, and they may not be seen. No notifications (email or otherwise) are sent out when these comments are added, so we aren't aware that you have added content! If you need to make a meta-comment about this assignment, please include it in the README file in your .zip file, or email the person directly who will be grading it (see the [Home](https://oregonstate.instructure.com/courses/1725991/pages/home-page) page for grading responsibilities).
-
-The graders will compile your code according to your exact specifications. They will make a reasonable effort to make it work, but if it doesn’t compile, you’ll receive a zero on this assignment.
-
-The due date given below is the last minute that this can be turned in for full credit. The "available until" date is NOT the due date, but instead closes off submissions for this assignment automatically once 48 hours past the due date has been reached, in accordance with our [Syllabus Grading policies](https://oregonstate.instructure.com/courses/1725991/assignments/syllabus#grading).
-
-# Grading
-
-Once the program is compiled, according to your specifications given in "readme.txt", your shell will be executed to run a few sample commands against (`ls`, `status`, `exit`, in that order). If the program does not successfully work on those commands, it will receive a zero. If it works, it will have the p3testscript program ran against it (as detailed above) for final grading. Points will be assigned according to the test script running on our class server only, so make sure it runs there.
-
-170 points are available in the test script, while the final 10 points will be based on your style, readability, and commenting. Comment well, often, and verbosely: we want to see that you are telling us WHY you are doing things, in addition to telling us WHAT you are doing.
-
-The TAs will use this exact set of instructions: [Program3 Grading.pdf](https://oregonstate.instructure.com/courses/1725991/files/71920075/download?verifier=tJv27bnbnDO3YIzfs6dEYfF2fBNOefwSxotbSszp&wrap=1) the document to grade your submission.
+### Example run using the above workflow:
+![Alt Image smallsh](/smallsh.PNG?raw=true)
 
