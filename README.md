@@ -1,4 +1,4 @@
-# Program 3 – CS 344
+# Shell Program
 
 # Overview
 
