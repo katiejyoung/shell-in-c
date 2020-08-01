@@ -155,5 +155,5 @@ background pid is 4963
 4. To terminate the program, type "exit"
 
 ### Example run using the above workflow:
-![Alt Image smallsh](/smallsh.PNG?raw=true)
-
+![Alt Image smallsh](/smallsh1.PNG?raw=true)
+![Alt Image smallsh](/smallsh2.PNG?raw=true)
