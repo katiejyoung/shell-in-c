@@ -154,6 +154,6 @@ background pid is 4963
 3. To run the program, type "smallsh"
 4. To terminate the program, type "exit"
 
-### Example run using the above workflow:
+### Example run of completed program using the above workflow:
 ![Alt Image smallsh](/smallsh1.PNG?raw=true)
 ![Alt Image smallsh](/smallsh2.PNG?raw=true)
